@@ -26,3 +26,4 @@ Thumbs.db
 # Agent Workspace cache
 .pi/
 openspec/
+composer.lock
