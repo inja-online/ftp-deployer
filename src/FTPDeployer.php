@@ -270,7 +270,7 @@ class FTPDeployer
         $vendorLocal = sys_get_temp_dir().'/'.$vendorName;
         $vendorRemote = $mapper->archiveRemotePath($vendorName);
         $progress("Vendor archive name from composer hashes: {$vendorName}");
-        $vendorUpload = $versioned ? ! $remoteArchiveExists($vendorRemote) : $vendorChanged;
+        $vendorUpload = $versioned ? !$remoteArchiveExists($vendorRemote) : $vendorChanged;
         if (($versioned || $vendorUpload) && is_dir($release.'/vendor')) {
             if ($vendorUpload) {
                 $progress("Creating vendor archive temp: {$vendorLocal}");

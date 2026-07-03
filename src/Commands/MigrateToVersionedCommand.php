@@ -231,6 +231,7 @@ class MigrateToVersionedCommand extends Command
                 $resolved[] = $part;
             }
         }
+
         return '/' . implode('/', $resolved);
     }
 

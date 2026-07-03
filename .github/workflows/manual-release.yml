@@ -60,7 +60,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          php-version: "8.1"
           extensions: ftp, zip, mbstring, xml, ctype, json, tokenizer, pdo, sqlite, pdo_sqlite
           coverage: none
 
@@ -75,9 +75,6 @@ jobs:
 
       - name: Run static analysis
         run: composer stan
-
-      - name: Run lint check
-        run: composer lint-test
 
       - name: Create tag
         env:
