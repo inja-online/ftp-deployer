@@ -1,0 +1,63 @@
+{
+    "name": "injaonline/ftp-deployer",
+    "description": "Deploy Laravel applications to cPanel-style FTP-only hosts with a temporary HTTP runner.",
+    "keywords": [
+        "laravel",
+        "cpanel",
+        "ftp",
+        "deployer",
+        "FTPDeployer"
+    ],
+    "homepage": "https://github.com/injaonline/ftp-deployer",
+    "license": "AGPL-3.0-or-later",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Amin Sharifi",
+            "email": "moaminsharifi@duck.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.1|^8.2|^8.3|^8.4|^8.5",
+        "ext-ftp": "*",
+        "illuminate/support": "^10.0|^11.0|^12.0|^13.0",
+        "lazzard/php-ftp-client": "^1.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
+        "larastan/larastan": "^3.0",
+        "orchestra/testbench": "^8.0|^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "InjaOnline\\FTPDeployer\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "InjaOnline\\FTPDeployer\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "stan": "vendor/bin/phpstan analyse",
+        "lint": "vendor/bin/php-cs-fixer fix -v",
+        "lint-test": "vendor/bin/php-cs-fixer fix -v --dry-run"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "InjaOnline\\FTPDeployer\\FTPDeployerServiceProvider"
+            ],
+            "aliases": {
+                "FTPDeployer": "InjaOnline\\FTPDeployer\\FTPDeployerFacade"
+            }
+        }
+    }
+}

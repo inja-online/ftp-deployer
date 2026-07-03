@@ -1,0 +1,1054 @@
+---
+const { frontmatter } = Astro.props;
+const currentPath = Astro.url.pathname;
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+
+const normalize = (path) => path.replace(/\/$/, "").toLowerCase();
+
+const sections = [
+  {
+    title: "Getting Started",
+    tint: "sage",
+    links: [
+      { label: "Introduction", href: `${base}/` },
+      { label: "Installation", href: `${base}/installation/` },
+      { label: "Configuration", href: `${base}/configuration/` },
+      { label: "cPanel Env Setup", href: `${base}/cpanel-env/` },
+    ],
+  },
+  {
+    title: "Usage & Architecture",
+    tint: "sky",
+    links: [
+      { label: "Core Concepts", href: `${base}/concepts/` },
+      { label: "CLI Commands", href: `${base}/commands/` },
+      { label: "Cookbook & Examples", href: `${base}/cookbook/` },
+      { label: "Extending & Overriding", href: `${base}/extending/` },
+      { label: "AI Agent Skill", href: `${base}/agent-skill/` },
+      { label: "Security Model", href: `${base}/security/` },
+      { label: "Troubleshooting", href: `${base}/troubleshooting/` },
+    ],
+  },
+];
+
+const githubUrl = "https://github.com/injaonline/ftp-deployer";
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{frontmatter.title} | FTP Deployer</title>
+    {frontmatter.description && <meta name="description" content={frontmatter.description} />}
+    <link rel="canonical" href={`https://injaonline.github.io/ftp-deployer${Astro.url.pathname}`} />
+    <meta property="og:title" content={`${frontmatter.title} | FTP Deployer`} />
+    {frontmatter.description && <meta property="og:description" content={frontmatter.description} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={`https://injaonline.github.io/ftp-deployer${Astro.url.pathname}`} />
+    <meta property="og:site_name" content="FTP Deployer" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={`${frontmatter.title} | FTP Deployer`} />
+    {frontmatter.description && <meta name="twitter:description" content={frontmatter.description} />}
+    
+    <!-- Google Fonts - Manrope substitute for Forma DJR Micro -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Theme Toggle Initialization Script to prevent flash of light theme -->
+    <script is:inline>
+      (function () {
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <!-- nav-bar-top: Clean, low-profile header with toggle -->
+    <header class="nav-bar-top">
+      <div class="nav-bar-container">
+        <a href={`${base}/`} class="brand-block">
+          <span class="brand-logo">
+            <svg width="20" height="20" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Folder Outline -->
+              <path d="M1.5 0C.678 0 0 .678 0 1.5v23c0 .822.678 1.5 1.5 1.5h7c.667 0 .66-1 0-1h-7c-.286 0-.5-.214-.5-.5v-23c0-.286.214-.5.5-.5h7c.5 0 .647.007.777.072.13.066.37.282.87.782l3 3c.516.516.865.81 1.248.98.382.17.733.166 1.105.166h13c.286 0 .5.214.5.5v18c0 .286-.214.5-.5.5h-6c-.646 0-.672 1 0 1h6c.822 0 1.5-.678 1.5-1.5v-18c0-.822-.678-1.5-1.5-1.5h-13c-.373 0-.52-.002-.7-.082-.182-.08-.46-.285-.946-.772l-3-3c-.5-.5-.762-.784-1.13-.968C9.353-.007 9 0 8.5 0z" fill="var(--colors-primary)" />
+              <!-- Letters (FTP) -->
+              <path d="M7.5 10c-.276 0-.5.224-.5.5v6c0 .66 1 .668 1 0V14h1.5c.665 0 .65-1 0-1H8v-2h2.5c.66.01.66-1 0-1z" fill="var(--colors-ink-deep)" />
+              <path d="M13.5 10c-.66 0-.66 1 0 1H15v5.5c0 .67 1 .665 1 0V11h1.5c.66.01.662-1 0-1z" fill="var(--colors-ink-deep)" />
+              <path d="M20.5 10c-.276 0-.5.224-.5.5v6c0 .672 1 .653 1 0V14h.5c.832 0 1.468-.206 1.896-.59.43-.383.604-.92.604-1.41 0-.49-.175-1.027-.604-1.41-.428-.384-1.064-.59-1.896-.59zm.5 1h.5c.668 0 1.032.16 1.23.336.195.175.27.39.27.664 0 .273-.075.49-.27.664-.198.176-.562.336-1.23.336H21z" fill="var(--colors-ink-deep)" />
+              <!-- Arrow -->
+              <path d="M15.5 19c-.13.002-.26.055-.353.146l-3.994 3.995c-.464.446.26 1.17.706.707l3.64-3.642 3.64 3.642c.454.472 1.175-.257.707-.706l-3.994-3.994c-.096-.095-.218-.148-.353-.146zm0 3c.277 0 .5.223.5.5v7c0 .277-.223.5-.5.5s-.5-.223-.5-.5v-7c0-.277.223-.5.5-.5z" fill="var(--colors-bloom-coral)" />
+            </svg>
+          </span>
+          <span class="banner-title">FTP DEPLOYER</span>
+        </a>
+        <div class="nav-actions-right">
+          <a class="nav-link-top" href={githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+          <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme" title="Toggle theme">
+            <!-- Sun icon (shown in dark mode) -->
+            <svg class="sun-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="M4.93 4.93l1.41 1.41"></path>
+              <path d="M17.66 17.66l1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+              <path d="M6.34 17.66l-1.41 1.41"></path>
+              <path d="M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg class="moon-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </button>
+          <button class="mobile-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar" id="mobileToggle">
+            MENU
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- layout-container: main content and sidebar -->
+    <div class="layout-container">
+      <aside class="sidebar" id="sidebar">
+        <nav class="nav" aria-label="Documentation navigation">
+          {sections.map(section => (
+            <div class="nav-section">
+              <h2 class="nav-section-title">{section.title}</h2>
+              <ul class="nav-list">
+                {section.links.map(link => {
+                  const isActive = normalize(currentPath) === normalize(link.href) ||
+                    (normalize(currentPath) === "" && normalize(link.href) === normalize(base));
+                  return (
+                    <li class="nav-item">
+                      <a href={link.href} class={`nav-link ${isActive ? 'active' : ''}`} aria-current={isActive ? 'page' : undefined}>
+                        {link.label}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </aside>
+
+      <main class="content" id="main-content">
+        <article class="prose">
+          <slot />
+        </article>
+      </main>
+    </div>
+
+    <!-- footer-dark: Clean, minimal dark slab footer -->
+    <footer class="footer-dark">
+      <div class="footer-container">
+        <div class="footer-bottom">
+          <div class="footer-bottom-left">
+            <svg width="16" height="16" viewBox="0 0 30 30" fill="none" class="footer-logo" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1.5 0C.678 0 0 .678 0 1.5v23c0 .822.678 1.5 1.5 1.5h7c.667 0 .66-1 0-1h-7c-.286 0-.5-.214-.5-.5v-23c0-.286.214-.5.5-.5h7c.5 0 .647.007.777.072.13.066.37.282.87.782l3 3c.516.516.865.81 1.248.98.382.17.733.166 1.105.166h13c.286 0 .5.214.5.5v18c0 .286-.214.5-.5.5h-6c-.646 0-.672 1 0 1h6c.822 0 1.5-.678 1.5-1.5v-18c0-.822-.678-1.5-1.5-1.5h-13c-.373 0-.52-.002-.7-.082-.182-.08-.46-.285-.946-.772l-3-3c-.5-.5-.762-.784-1.13-.968C9.353-.007 9 0 8.5 0z" fill="var(--colors-footer-text, var(--colors-steel))" />
+              <path d="M7.5 10c-.276 0-.5.224-.5.5v6c0 .66 1 .668 1 0V14h1.5c.665 0 .65-1 0-1H8v-2h2.5c.66.01.66-1 0-1z" fill="var(--colors-footer-text, var(--colors-steel))" />
+              <path d="M13.5 10c-.66 0-.66 1 0 1H15v5.5c0 .67 1 .665 1 0V11h1.5c.66.01.662-1 0-1z" fill="var(--colors-footer-text, var(--colors-steel))" />
+              <path d="M20.5 10c-.276 0-.5.224-.5.5v6c0 .672 1 .653 1 0V14h.5c.832 0 1.468-.206 1.896-.59.43-.383.604-.92.604-1.41 0-.49-.175-1.027-.604-1.41-.428-.384-1.064-.59-1.896-.59zm.5 1h.5c.668 0 1.032.16 1.23.336.195.175.27.39.27.664 0 .273-.075.49-.27.664-.198.176-.562.336-1.23.336H21z" fill="var(--colors-footer-text, var(--colors-steel))" />
+              <path d="M15.5 19c-.13.002-.26.055-.353.146l-3.994 3.995c-.464.446.26 1.17.706.707l3.64-3.642 3.64 3.642c.454.472 1.175-.257.707-.706l-3.994-3.994c-.096-.095-.218-.148-.353-.146zm0 3c.277 0 .5.223.5.5v7c0 .277-.223.5-.5.5s-.5-.223-.5-.5v-7c0-.277.223-.5.5-.5z" fill="var(--colors-footer-text, var(--colors-steel))" />
+            </svg>
+            <span class="footer-copyright">© 2026 FTP Deployer · Documentation for FTP-only Laravel deployment.</span>
+          </div>
+          <div class="footer-bottom-right">
+            <a href={githubUrl} class="footer-meta-link" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href={`${base}/security/`} class="footer-meta-link">Security Policy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- mermaidModal: SVG Zoom Modal -->
+    <div id="mermaidModal" class="mermaid-modal" aria-hidden="true">
+      <div class="mermaid-modal-overlay"></div>
+      <div class="mermaid-modal-content">
+        <button id="closeMermaidModal" class="mermaid-modal-close" aria-label="Close modal">&times;</button>
+        <img id="mermaidModalImage" src="" alt="Zoomed Diagram" class="mermaid-modal-img" />
+        <a id="mermaidModalDownload" href="" download class="button-primary mermaid-modal-download">Download SVG</a>
+      </div>
+    </div>
+
+    <script>
+      // Theme Toggle logic
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+          const isDark = document.documentElement.classList.toggle('dark');
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        });
+      }
+
+      const toggle = document.getElementById('mobileToggle');
+      const sidebar = document.getElementById('sidebar');
+
+      if (toggle && sidebar) {
+        toggle.addEventListener('click', (e) => {
+          const isOpen = sidebar.classList.toggle('open');
+          toggle.setAttribute('aria-expanded', String(isOpen));
+          e.stopPropagation();
+        });
+
+        document.addEventListener('click', (e) => {
+          if (sidebar.classList.contains('open') && !sidebar.contains(e.target as Node) && e.target !== toggle) {
+            sidebar.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      document.querySelectorAll('.prose blockquote').forEach((bq) => {
+        const p = bq.querySelector('p');
+        if (!p) return;
+
+        const match = p.innerHTML.match(/^\[!(NOTE|WARNING|TIP|IMPORTANT|CAUTION)\](?:\s*<br\s*\/?>)?\s*/i);
+        if (match) {
+          bq.classList.add(match[1].toLowerCase());
+          p.innerHTML = p.innerHTML.replace(/^\[!(NOTE|WARNING|TIP|IMPORTANT|CAUTION)\](?:\s*<br\s*\/?>)?\s*/i, '');
+        }
+      });
+
+      // SVG Diagram Zoom & Download controls
+      const modal = document.getElementById('mermaidModal');
+      const modalImg = document.getElementById('mermaidModalImage') as HTMLImageElement | null;
+      const modalDownload = document.getElementById('mermaidModalDownload') as HTMLAnchorElement | null;
+      const closeModal = document.getElementById('closeMermaidModal');
+      const modalOverlay = modal?.querySelector('.mermaid-modal-overlay');
+
+      function openModal(src: string) {
+        if (modal && modalImg && modalDownload) {
+          modalImg.src = src;
+          modalDownload.href = src;
+          modalDownload.download = src.split('/').pop() || 'diagram.svg';
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function close() {
+        if (modal) {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+
+      if (closeModal) closeModal.addEventListener('click', close);
+      if (modalOverlay) modalOverlay.addEventListener('click', close);
+      
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') close();
+      });
+
+      document.querySelectorAll('.mermaid').forEach((container) => {
+        const img = container.querySelector('img');
+        if (!img) return;
+        const imgSrc = img.getAttribute('src');
+        if (!imgSrc) return;
+        
+        container.classList.add('has-controls');
+        
+        // Create controls container
+        const controls = document.createElement('div');
+        controls.className = 'mermaid-controls';
+        
+        // Zoom button
+        const btnZoom = document.createElement('button');
+        btnZoom.className = 'mermaid-btn btn-zoom';
+        btnZoom.type = 'button';
+        btnZoom.textContent = 'Zoom';
+        btnZoom.addEventListener('click', () => openModal(imgSrc));
+        
+        // Download button
+        const btnDownload = document.createElement('a');
+        btnDownload.className = 'mermaid-btn btn-download';
+        btnDownload.href = imgSrc;
+        btnDownload.download = imgSrc.split('/').pop() || 'diagram.svg';
+        btnDownload.textContent = 'Download';
+        
+        controls.appendChild(btnZoom);
+        controls.appendChild(btnDownload);
+        container.appendChild(controls);
+        
+        // Image click triggers zoom
+        img.style.cursor = 'zoom-in';
+        img.addEventListener('click', () => openModal(imgSrc));
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    /* Brand & Accent */
+    --colors-primary: #024ad8;
+    --colors-primary-bright: #296ef9;
+    --colors-primary-deep: #0e3191;
+    --colors-primary-soft: #c9e0fc;
+    
+    /* Surfaces */
+    --colors-canvas: #ffffff;
+    --colors-paper: #ffffff;
+    --colors-cloud: #f7f7f7;
+    --colors-fog: #e8e8e8;
+    --colors-steel: #c2c2c2;
+    --colors-hairline: #e8e8e8;
+    
+    /* Semantic / Accent Highlights */
+    --colors-bloom-coral: #ff5050;
+    --colors-bloom-rose: #f9d4d2;
+    --colors-bloom-deep: #b3262b;
+    --colors-bloom-wine: #5a1313;
+    
+    --colors-blockquote-important-bg: #e6f0fa;
+    --colors-footer-bg: #1a1a1a;
+    --colors-footer-text: #c2c2c2;
+    --colors-nav-active-text: var(--colors-primary-deep);
+    
+    --colors-storm-mist: #8ebdce;
+    --colors-storm-sea: #7fadbe;
+    --colors-storm-deep: #356373;
+    
+    /* Ink Tones */
+    --colors-ink: #1a1a1a;
+    --colors-ink-deep: #000000;
+    --colors-ink-soft: #292929;
+    --colors-on-ink: #ffffff;
+    --colors-charcoal: #3d3d3d;
+    --colors-graphite: #636363;
+  }
+
+  html.dark {
+    /* Brand & Accent overrides for dark theme */
+    --colors-primary: #296ef9;
+    --colors-primary-bright: #4f83f8;
+    --colors-primary-deep: #0044cc;
+    --colors-primary-soft: rgba(41, 110, 249, 0.15);
+    
+    /* Surfaces overrides for dark theme */
+    --colors-canvas: #0c0e12;
+    --colors-paper: #161920;
+    --colors-cloud: #1b1e26;
+    --colors-fog: #242934;
+    --colors-steel: #485264;
+    --colors-hairline: #222630;
+    
+    /* Semantic / Accent Highlights overrides for dark theme */
+    --colors-bloom-coral: #ff6b6b;
+    --colors-bloom-rose: #3a1e1e;
+    --colors-bloom-deep: #f87171;
+    --colors-bloom-wine: #fca5a5;
+    
+    --colors-blockquote-important-bg: #1e293b;
+    --colors-footer-bg: #07080a;
+    --colors-footer-text: #8a99ad;
+    --colors-nav-active-text: var(--colors-ink-deep);
+    
+    --colors-storm-mist: #2b3942;
+    --colors-storm-sea: #222d35;
+    --colors-storm-deep: #6f95a8;
+    
+    /* Ink / Typography Tones overrides for dark theme */
+    --colors-ink: #e2e8f0;
+    --colors-ink-deep: #ffffff;
+    --colors-ink-soft: #cbd5e1;
+    --colors-on-ink: #ffffff;
+    --colors-charcoal: #94a3b8;
+    --colors-graphite: #64748b;
+    
+    /* Shadows & Elevation overrides for dark theme */
+    --shadow-soft-lift: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-floating-modal: 0 8px 32px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Fonts (Manrope as best open-source substitute for Forma DJR Micro) */
+  :root {
+    --font-display: 'Manrope', sans-serif;
+    --font-ui: 'Manrope', sans-serif;
+    --font-body: 'Manrope', sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Spacing System (Base 8px) */
+    --spacing-xxs: 4px;
+    --spacing-xs: 8px;
+    --spacing-sm: 12px;
+    --spacing-md: 16px;
+    --spacing-lg: 20px;
+    --spacing-xl: 24px;
+    --spacing-xxl: 32px;
+    --spacing-section: 80px;
+
+    /* Border Radius Scale */
+    --rounded-none: 0px;
+    --rounded-xs: 2px;
+    --rounded-sm: 3px;
+    --rounded-md: 4px;
+    --rounded-lg: 8px;
+    --rounded-xl: 16px;
+    --rounded-pill: 9999px;
+
+    /* Shadows & Elevation */
+    --shadow-soft-lift: 0 2px 8px rgba(26, 26, 26, 0.08);
+    --shadow-floating-modal: 0 8px 24px rgba(26, 26, 26, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--colors-canvas);
+    color: var(--colors-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  a {
+    color: var(--colors-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: var(--colors-primary-deep);
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--colors-ink-deep);
+    outline-offset: 2px;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    z-index: 1000;
+    padding: 8px 16px;
+    background: var(--colors-canvas);
+    border: 1px solid var(--colors-ink);
+    border-radius: var(--rounded-md);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    color: var(--colors-ink);
+    text-decoration: none;
+    transform: translateY(-150%);
+    transition: transform 0.2s ease;
+  }
+
+  .skip-link:focus { transform: translateY(0); }
+
+  /* Nav Bar Top */
+  .nav-bar-top {
+    background: var(--colors-canvas);
+    border-bottom: 1px solid var(--colors-hairline);
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-bar-container {
+    max-width: 1366px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-xl);
+  }
+  .brand-block {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    color: var(--colors-ink);
+    text-decoration: none;
+  }
+  .brand-logo {
+    display: flex;
+    align-items: center;
+  }
+  .banner-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--colors-ink-deep);
+    letter-spacing: -0.5px;
+  }
+  .nav-actions-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  .nav-link-top {
+    color: var(--colors-ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 8px 12px;
+  }
+  .nav-link-top:hover {
+    text-decoration: underline;
+  }
+  .mobile-toggle {
+    display: none;
+  }
+
+  /* Button General Components */
+  .button-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--colors-primary);
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 12px 24px;
+    height: 44px;
+    border-radius: var(--rounded-md);
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .button-primary:hover {
+    background: var(--colors-primary-deep);
+    color: #ffffff;
+  }
+  .button-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--colors-canvas);
+    color: var(--colors-primary);
+    border: 1px solid var(--colors-primary);
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    padding: 12px 24px;
+    height: 44px;
+    border-radius: var(--rounded-md);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .button-outline:hover {
+    background: var(--colors-primary-soft);
+  }
+
+  /* Layout Container */
+  .layout-container {
+    max-width: 1366px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: var(--spacing-xxl);
+    padding: var(--spacing-xxl) var(--spacing-xl) var(--spacing-section);
+  }
+  .sidebar {
+    background: var(--colors-canvas);
+  }
+  .nav-section {
+    margin-bottom: var(--spacing-xxl);
+  }
+  .nav-section-title {
+    font-family: var(--font-ui);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--colors-graphite);
+    margin: 0 0 var(--spacing-sm) 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+  .nav-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nav-item {
+    margin-bottom: var(--spacing-xxs);
+  }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 6px 12px;
+    border-radius: var(--rounded-md);
+    color: var(--colors-charcoal);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+  .nav-link:hover {
+    background: var(--colors-cloud);
+    color: var(--colors-ink);
+  }
+  .nav-link.active {
+    background: var(--colors-primary-soft);
+    color: var(--colors-nav-active-text, var(--colors-primary-deep));
+    font-weight: 600;
+    border: none;
+    text-decoration: none;
+  }
+
+  .content {
+    min-width: 0;
+    padding: 0;
+  }
+
+  /* Prose / Docs styling */
+  .prose {
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--colors-ink);
+    max-width: 800px;
+  }
+  .prose p {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--colors-charcoal);
+  }
+  .prose strong {
+    font-weight: 600;
+    color: var(--colors-ink-deep);
+  }
+  .prose h1 {
+    font-family: var(--font-display);
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 1.1;
+    color: var(--colors-ink-deep);
+    margin: 0 0 var(--spacing-xl) 0;
+    padding: 0;
+    background: transparent;
+    border: none;
+    text-transform: none;
+  }
+  .prose h2 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--colors-ink-deep);
+    margin: var(--spacing-xxl) 0 var(--spacing-md) 0;
+    padding: 0 0 var(--spacing-xs) 0;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--colors-hairline);
+    text-transform: none;
+  }
+  .prose h3 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--colors-ink-deep);
+    margin: var(--spacing-xl) 0 var(--spacing-xs) 0;
+    text-transform: none;
+  }
+  .prose hr {
+    border: 0;
+    border-top: 1px solid var(--colors-hairline);
+    margin: var(--spacing-xl) 0;
+  }
+  .prose ul, .prose ol {
+    margin: 0 0 var(--spacing-md) 0;
+    padding-left: 24px;
+  }
+  .prose li {
+    margin-bottom: var(--spacing-xs);
+    color: var(--colors-charcoal);
+  }
+  .prose code {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    background: var(--colors-cloud);
+    border: 1px solid var(--colors-hairline);
+    border-radius: var(--rounded-md);
+    padding: 2px 6px;
+    color: var(--colors-bloom-deep);
+  }
+  .prose pre {
+    background: var(--colors-cloud);
+    border: 1px solid var(--colors-hairline);
+    border-radius: var(--rounded-lg);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    overflow-x: auto;
+  }
+  .prose pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: var(--colors-ink);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .astro-code {
+    background-color: var(--colors-cloud) !important;
+    border: 1px solid var(--colors-hairline);
+    border-radius: var(--rounded-lg);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    font-family: var(--font-mono) !important;
+  }
+  .astro-code span {
+    font-family: var(--font-mono) !important;
+  }
+  .prose blockquote {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--rounded-lg);
+    border: none;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .prose blockquote.note,
+  .prose blockquote.tip {
+    background: var(--colors-primary-soft);
+    border-left: 4px solid var(--colors-primary);
+    color: var(--colors-primary-deep);
+  }
+  .prose blockquote.warning,
+  .prose blockquote.caution {
+    background: var(--colors-bloom-rose);
+    border-left: 4px solid var(--colors-bloom-deep);
+    color: var(--colors-bloom-wine);
+  }
+  .prose blockquote.important {
+    background: var(--colors-blockquote-important-bg);
+    border-left: 4px solid var(--colors-primary-bright);
+    color: var(--colors-ink-soft);
+  }
+  .prose blockquote p {
+    margin: 0;
+    color: inherit;
+  }
+  .prose blockquote strong {
+    color: inherit;
+  }
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-bottom: var(--spacing-xl);
+  }
+  .prose th,
+  .prose td {
+    padding: 10px 12px;
+    border: 1px solid var(--colors-hairline);
+    text-align: left;
+  }
+  .prose th {
+    background: var(--colors-cloud);
+    font-family: var(--font-ui);
+    font-weight: 600;
+    color: var(--colors-ink);
+  }
+  .prose tr:nth-child(even) { background: var(--colors-cloud); }
+
+  /* SVG Diagram Container, controls, and hover effects */
+  .mermaid {
+    background: var(--colors-cloud);
+    border: 1px solid var(--colors-hairline);
+    border-radius: var(--rounded-xl);
+    box-shadow: var(--shadow-soft-lift);
+    padding: var(--spacing-xl);
+    margin: var(--spacing-xl) auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    max-width: 480px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .mermaid:hover {
+    box-shadow: 0 4px 12px rgba(26, 26, 26, 0.12);
+  }
+  .mermaid img {
+    max-width: 100%;
+    height: auto;
+    max-height: 180px;
+    object-fit: contain;
+    transition: opacity 0.2s ease;
+  }
+  .mermaid:hover img {
+    opacity: 0.9;
+  }
+  .mermaid-controls {
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    display: flex;
+    gap: 6px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 10;
+  }
+  .mermaid:hover .mermaid-controls {
+    opacity: 1;
+  }
+  .mermaid-btn {
+    background: rgba(26, 26, 26, 0.85);
+    color: #ffffff;
+    border: none;
+    border-radius: var(--rounded-md);
+    padding: 0 12px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 28px;
+  }
+  .mermaid-btn:hover {
+    background: var(--colors-primary);
+    color: #ffffff;
+  }
+  
+  /* Zoom Modal */
+  .mermaid-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .mermaid-modal.active {
+    display: flex;
+  }
+  .mermaid-modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(26, 26, 26, 0.9);
+    backdrop-filter: blur(4px);
+  }
+  .mermaid-modal-content {
+    position: relative;
+    z-index: 10001;
+    max-width: 90vw;
+    max-height: 85vh;
+    background: var(--colors-canvas);
+    border-radius: var(--rounded-xl);
+    padding: var(--spacing-xxl);
+    box-shadow: var(--shadow-floating-modal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  .mermaid-modal-img {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+  }
+  .mermaid-modal-close {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    background: none;
+    border: none;
+    color: var(--colors-ink);
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .mermaid-modal-close:hover {
+    color: var(--colors-primary);
+  }
+  .mermaid-modal-download {
+    margin-top: var(--spacing-xs);
+  }
+
+  /* Footer Dark */
+  .footer-dark {
+    background: var(--colors-footer-bg, #1a1a1a);
+    color: var(--colors-on-ink);
+    padding: 32px var(--spacing-xl);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: var(--font-ui);
+  }
+  .footer-container {
+    max-width: 1366px;
+    margin: 0 auto;
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--colors-footer-text, var(--colors-steel));
+  }
+  .footer-bottom-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+  }
+  .footer-logo {
+    opacity: 0.6;
+  }
+  .footer-bottom-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  .footer-meta-link {
+    color: var(--colors-footer-text, var(--colors-steel));
+    text-decoration: none;
+  }
+  .footer-meta-link:hover {
+    color: var(--colors-on-ink);
+    text-decoration: underline;
+  }
+
+  /* Responsive Behavior */
+  @media (max-width: 1024px) {
+    .mobile-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--colors-ink);
+      color: var(--colors-on-ink);
+      border: none;
+      border-radius: var(--rounded-md);
+      height: 36px;
+      padding: 0 12px;
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.7px;
+      cursor: pointer;
+    }
+    .layout-container {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-lg) var(--spacing-xl);
+    }
+    .sidebar {
+      display: none;
+      border-bottom: 1px solid var(--colors-hairline);
+      padding-bottom: var(--spacing-lg);
+    }
+    .sidebar.open {
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .footer-bottom {
+      flex-direction: column;
+      gap: var(--spacing-md);
+      align-items: flex-start;
+    }
+  }
+
+  /* Theme Toggle styles */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: transparent;
+    border: none;
+    border-radius: var(--rounded-md);
+    color: var(--colors-ink);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .theme-toggle:hover {
+    background: var(--colors-cloud);
+    color: var(--colors-primary);
+  }
+  .theme-toggle svg {
+    transition: transform 0.3s ease;
+  }
+  .theme-toggle:hover svg {
+    transform: rotate(15deg);
+  }
+  
+  /* Icon visibility based on theme */
+  .sun-icon {
+    display: none;
+  }
+  .moon-icon {
+    display: block;
+  }
+  
+  html.dark .sun-icon {
+    display: block;
+  }
+  html.dark .moon-icon {
+    display: none;
+  }
+
+  /* Shiki Code Theme overrides */
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-light) !important;
+    font-style: var(--shiki-light-font-style) !important;
+    font-weight: var(--shiki-light-font-weight) !important;
+    text-decoration: var(--shiki-light-text-decoration) !important;
+  }
+  
+  html.dark .astro-code,
+  html.dark .astro-code span {
+    color: var(--shiki-dark) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+
+  /* Mobile Toggle dark mode adjustment */
+  html.dark .mobile-toggle {
+    background: var(--colors-cloud);
+    color: var(--colors-ink);
+  }
+
+  /* Diagram inverted colors in dark mode for SVGs */
+  html.dark .mermaid img,
+  html.dark .mermaid-modal-img {
+    filter: invert(0.9) hue-rotate(180deg) contrast(1.2);
+  }
+</style>

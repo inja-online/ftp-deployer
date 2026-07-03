@@ -1,0 +1,247 @@
+<?php
+
+declare(strict_types=1);
+
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Support\Facades\Artisan;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+
+const DEPLOY_TOKEN = '{{TOKEN}}';
+const MODE = '{{MODE}}';
+const VENDOR_AUTOLOAD = '{{VENDOR_AUTOLOAD}}';
+const SIMPLE_APP_ROOT = __DIR__.'/{{APP_ROOT_RELATIVE}}';
+const RELEASE_ROOT = '{{RELEASE_ROOT}}';
+const SHARED_ROOT = '{{SHARED_ROOT}}';
+
+header('Content-Type: application/json');
+
+function appRoot(): string
+{
+    return MODE === 'versioned' ? rtrim(RELEASE_ROOT, '/') : SIMPLE_APP_ROOT;
+}
+
+function sharedRoot(): string
+{
+    return MODE === 'versioned' ? rtrim(SHARED_ROOT, '/') : appRoot();
+}
+
+function respond(bool $ok, array $logs = [], int $status = 200): never
+{
+    http_response_code($status);
+    echo json_encode(['ok' => $ok, 'logs' => $logs], JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+function sanitize(string $text): string
+{
+    return preg_replace('/(APP_KEY|DB_PASSWORD|PASSWORD|SECRET|TOKEN)=([^\s]+)/i', '$1=[redacted]', $text) ?? $text;
+}
+
+function safeZipEntry(string $path): bool
+{
+    $path = str_replace('\\\\', '/', $path);
+    if ($path === '' || str_starts_with($path, '/') || str_starts_with($path, '//') || preg_match('/^[A-Za-z]:/', $path)) {
+        return false;
+    }
+    foreach (explode('/', $path) as $part) {
+        if ($part === '..') {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function extractArchive(string $archive, string $destination, string $skipIfExists = ''): array
+{
+    if ($skipIfExists !== '' && file_exists($skipIfExists)) {
+        return ['message' => "Reusing extracted archive at {$destination}"];
+    }
+    if (! class_exists(ZipArchive::class)) {
+        return ['message' => 'Missing PHP extension: zip'];
+    }
+    $zip = new ZipArchive();
+    if ($zip->open($archive) !== true) {
+        return ['message' => "Unable to open archive: {$archive}"];
+    }
+    for ($i = 0; $i < $zip->numFiles; $i++) {
+        $name = (string) $zip->getNameIndex($i);
+        if (! safeZipEntry($name)) {
+            $zip->close();
+
+            return ['message' => "Unsafe archive entry: {$name}"];
+        }
+    }
+    if (! is_dir($destination)) {
+        @mkdir($destination, 0755, true);
+    }
+    $ok = $zip->extractTo($destination);
+    $zip->close();
+
+    return $ok ? ['message' => "Extracted {$archive} to {$destination}"] : ['message' => "Archive extraction failed: {$archive}"];
+}
+
+function vendorAutoloadPath(): string
+{
+    return MODE === 'versioned' ? VENDOR_AUTOLOAD : appRoot().'/vendor/autoload.php';
+}
+
+function ensureRootHtaccess(): array
+{
+    $publicDir = '{{PUBLIC_DIR}}';
+    $ftpRootRelative = '{{FTP_ROOT_RELATIVE}}';
+
+    if ($publicDir === '' || $publicDir === '.' || $publicDir === '/') {
+        return [];
+    }
+
+    $htaccessPath = __DIR__ . '/' . rtrim($ftpRootRelative, '/') . '/.htaccess';
+    $htaccessPath = preg_replace('#/\./#', '/', $htaccessPath);
+    $htaccessPath = rtrim($htaccessPath, '/');
+
+    $rules = "<IfModule mod_rewrite.c>\n" .
+        "    RewriteEngine On\n\n" .
+        "    # Prevent directory listing\n" .
+        "    Options -Indexes\n\n" .
+        "    # Rewrite all requests to the {$publicDir} subdirectory\n" .
+        "    RewriteCond %{REQUEST_URI} !^/{$publicDir}/\n" .
+        "    RewriteRule ^(.*)$ {$publicDir}/$1 [L]\n" .
+        "</IfModule>\n\n" .
+        "# Block direct access to sensitive files\n" .
+        "<FilesMatch \"^\\.env|composer\\.(json|lock)|package\\.json\">\n" .
+        "    <IfModule mod_authz_core.c>\n" .
+        "        Require all denied\n" .
+        "    </IfModule>\n" .
+        "    <IfModule !mod_authz_core.c>\n" .
+        "        Order deny,allow\n" .
+        "        Deny from all\n" .
+        "    </IfModule>\n" .
+        "</FilesMatch>";
+
+    if (! file_exists($htaccessPath)) {
+        if (@file_put_contents($htaccessPath, $rules) !== false) {
+            return ['message' => "Created root .htaccess at {$htaccessPath} to redirect to {$publicDir}"];
+        }
+
+        return ['message' => "Warning: failed to create root .htaccess at {$htaccessPath}"];
+    }
+
+    $content = @file_get_contents($htaccessPath);
+    if ($content !== false && ! str_contains($content, $publicDir)) {
+        $newContent = $rules . "\n\n" . $content;
+        if (@file_put_contents($htaccessPath, $newContent) !== false) {
+            return ['message' => "Prepended redirect rules to root .htaccess at {$htaccessPath}"];
+        }
+
+        return ['message' => "Warning: failed to update root .htaccess at {$htaccessPath}"];
+    }
+
+    return [];
+}
+
+$payload = json_decode((string) file_get_contents('php://input'), true);
+if (! is_array($payload) || ! hash_equals(DEPLOY_TOKEN, (string) ($payload['token'] ?? ''))) {
+    respond(false, [['message' => 'Unauthorized']], 401);
+}
+
+$logs = [];
+$htaccessResult = ensureRootHtaccess();
+if ($htaccessResult) {
+    $logs[] = $htaccessResult;
+}
+foreach (($payload['extract'] ?? []) as $archive) {
+    $result = extractArchive((string) ($archive['archive'] ?? ''), (string) ($archive['destination'] ?? ''), (string) ($archive['skip_if_exists'] ?? ''));
+    $logs[] = $result;
+    if (! str_starts_with($result['message'], 'Extracted ') && ! str_starts_with($result['message'], 'Reusing extracted archive ')) {
+        respond(false, $logs, 500);
+    }
+}
+if (array_key_exists('extract', $payload) && empty($payload['commands'])) {
+    respond(true, $logs);
+}
+
+$appRoot = appRoot();
+$sharedRoot = sharedRoot();
+$envPath = $sharedRoot.'/.env';
+$storagePath = $sharedRoot.'/storage';
+
+$requirements = [];
+foreach (['openssl', 'pdo', 'mbstring', 'tokenizer', 'xml', 'ctype', 'json'] as $extension) {
+    if (! extension_loaded($extension)) {
+        $requirements[] = "Missing PHP extension: {$extension}";
+    }
+}
+foreach ([$appRoot.'/artisan', vendorAutoloadPath(), $appRoot.'/bootstrap/app.php', $envPath] as $path) {
+    if (! file_exists($path)) {
+        $requirements[] = "Missing required path: {$path}";
+    }
+}
+foreach ([$storagePath, $appRoot.'/bootstrap/cache'] as $path) {
+    if (! is_writable($path)) {
+        $requirements[] = "Path is not writable: {$path}";
+    }
+}
+$env = is_file($envPath) ? (string) file_get_contents($envPath) : '';
+if (! preg_match('/^APP_KEY=\S+/m', $env)) {
+    $requirements[] = 'Remote .env must contain a non-empty APP_KEY.';
+}
+if ($requirements) {
+    respond(false, array_map(fn ($message) => ['message' => $message], $requirements), 422);
+}
+
+foreach (glob($appRoot.'/bootstrap/cache/*.php') ?: [] as $cacheFile) {
+    @unlink($cacheFile);
+}
+
+function bootLaravel(): void
+{
+    $appRoot = appRoot();
+    $sharedRoot = sharedRoot();
+    putenv('APP_ENV_FILE='.$sharedRoot.'/.env');
+    $_SERVER['APP_ENV_FILE'] = $_ENV['APP_ENV_FILE'] = $sharedRoot.'/.env';
+    $_SERVER['LARAVEL_STORAGE_PATH'] = $_ENV['LARAVEL_STORAGE_PATH'] = $sharedRoot.'/storage';
+    require_once vendorAutoloadPath();
+    $app = require $appRoot.'/bootstrap/app.php';
+    if (method_exists($app, 'useStoragePath')) {
+        $app->useStoragePath($sharedRoot.'/storage');
+    }
+    $app->make(Kernel::class)->bootstrap();
+}
+
+$booted = false;
+foreach (($payload['commands'] ?? []) as $step) {
+    $cmd = (string) ($step['cmd'] ?? '');
+    $fail = (bool) ($step['fail_on_error'] ?? true);
+    if ($cmd === '') {
+        continue;
+    }
+
+    $output = [];
+    $code = 1;
+    if (function_exists('exec') && MODE === 'simple') {
+        @exec('cd '.escapeshellarg($appRoot).' && php artisan '.$cmd.' --no-interaction 2>&1', $output, $code);
+        $text = implode("\n", $output);
+    } else {
+        try {
+            if (! $booted) {
+                bootLaravel();
+                $booted = true;
+            }
+            $outputBuffer = new BufferedOutput();
+            $code = Artisan::handle(new StringInput($cmd.' --no-interaction'), $outputBuffer);
+            $text = $outputBuffer->fetch();
+        } catch (Throwable $e) {
+            $text = $e->getMessage();
+            $code = 1;
+        }
+    }
+
+    $ok = $code === 0;
+    $logs[] = ['command' => $cmd, 'ok' => $ok, 'output' => sanitize($text)];
+    if (! $ok && $fail) {
+        respond(false, $logs, 500);
+    }
+}
+
+respond(true, $logs);

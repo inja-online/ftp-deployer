@@ -1,0 +1,28 @@
+# PHP / Composer
+/vendor/
+composer.phar
+*.phar
+
+# Laravel specific
+.env
+installed.lock
+install*.php
+
+# Testing / Code quality caches
+.phpunit.result.cache
+.php-cs-fixer.cache
+/coverage/
+
+# IDE / Editor Files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Agent Workspace cache
+.pi/
+openspec/

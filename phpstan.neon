@@ -1,0 +1,16 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - src
+
+    # Level 9 is the highest level, 5 is a good baseline for Laravel packages
+    level: 5
+
+    ignoreErrors:
+        # Add regex strings here to ignore specific errors if needed
+        # - '#Unsafe usage of new static.*#'
+
+    excludePaths:
+        - ./src/stub/*
