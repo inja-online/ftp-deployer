@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://injaonline.github.io',
+  site: 'https://inja-online.github.io',
   base: '/ftp-deployer',
   integrations: [sitemap()],
   markdown: {

@@ -14,7 +14,7 @@ At the same time, many hosts still lacked built-in deployment tooling, especiall
 
 This gap created the need for a minimal, secure deployment path that does not rely on full SSH access.
 
-GitHub: <https://github.com/injaonline/ftp-deployer>
+GitHub: <https://github.com/inja-online/ftp-deployer>
 
 ## Requirements
 
@@ -31,7 +31,7 @@ GitHub: <https://github.com/injaonline/ftp-deployer>
 ### From Packagist
 
 ```bash
-composer require injaonline/ftp-deployer
+composer require inja-online/ftp-deployer
 php artisan vendor:publish --tag=ftp-deployer-config
 ```
 
@@ -62,7 +62,7 @@ Use this if you want to download the package code directly and put it in a local
 3. Run the require command:
 
 ```bash
-composer require injaonline/ftp-deployer:dev-main
+composer require inja-online/ftp-deployer:dev-main
 php artisan vendor:publish --tag=ftp-deployer-config
 ```
 
@@ -77,7 +77,7 @@ Add repository to your Laravel app `composer.json`:
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/injaonline/ftp-deployer"
+      "url": "https://github.com/inja-online/ftp-deployer"
     }
   ]
 }
@@ -86,7 +86,7 @@ Add repository to your Laravel app `composer.json`:
 Then require package:
 
 ```bash
-composer require injaonline/ftp-deployer:dev-main
+composer require inja-online/ftp-deployer:dev-main
 php artisan vendor:publish --tag=ftp-deployer-config
 ```
 
@@ -106,7 +106,7 @@ For a fork/private repo, replace URL:
 Then install from chosen branch:
 
 ```bash
-composer require injaonline/ftp-deployer:dev-main
+composer require inja-online/ftp-deployer:dev-main
 ```
 
 ## Configure
@@ -268,7 +268,7 @@ This repository includes a pre-configured AI Agent Skill (`ftp-deployer`) to hel
 To install this skill to your agent globally:
 
 ```bash
-npx skills add injaonline/ftp-deployer --skill ftp-deployer
+npx skills add inja-online/ftp-deployer --skill ftp-deployer
 ```
 
 

@@ -217,7 +217,7 @@ Use for safer deploys and faster Composer/vendor reuse.
      $app = require_once __DIR__ . '/bootstrap/app.php';
      $app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
      $profile = config('ftp-deployer.profiles.production');
-     $ftp = \InjaOnline\FTPDeployer\Support\FTPClient::connect($profile['ftp']);
+     $ftp = \inja-online\FTPDeployer\Support\FTPClient::connect($profile['ftp']);
      $ref = new ReflectionClass($ftp);
      $prop = $ref->getProperty('connection');
      $prop->setAccessible(true);

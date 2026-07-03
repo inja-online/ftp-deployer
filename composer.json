@@ -1,5 +1,5 @@
 {
-    "name": "injaonline/ftp-deployer",
+    "name": "inja-online/ftp-deployer",
     "description": "Deploy Laravel applications to cPanel-style FTP-only hosts with a temporary HTTP runner.",
     "keywords": [
         "laravel",

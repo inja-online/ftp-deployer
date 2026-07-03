@@ -46,7 +46,7 @@ Choose one of the methods below to install the package into your Laravel applica
 From your Laravel application root:
 
 ```bash
-composer require injaonline/ftp-deployer
+composer require inja-online/ftp-deployer
 ```
 
 ### Option B: From a local directory (Local Install)
@@ -77,7 +77,7 @@ Use this if you want to download or clone the package code directly and put it i
 3. Run the require command:
 
 ```bash
-composer require injaonline/ftp-deployer:dev-main
+composer require inja-online/ftp-deployer:dev-main
 ```
 
 ### Option C: From custom GitHub repository
@@ -91,7 +91,7 @@ Use this when installing from a fork, private repo, or before a Packagist releas
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/injaonline/ftp-deployer"
+      "url": "https://github.com/inja-online/ftp-deployer"
     }
   ]
 }
@@ -100,14 +100,14 @@ Use this when installing from a fork, private repo, or before a Packagist releas
 2. Then require the package:
 
 ```bash
-composer require injaonline/ftp-deployer:dev-main
+composer require inja-online/ftp-deployer:dev-main
 ```
 
 ---
 
 The package auto-discovers:
 
-- Service provider: `InjaOnline\FTPDeployer\FTPDeployerServiceProvider`
+- Service provider: `inja-online\FTPDeployer\FTPDeployerServiceProvider`
 - Facade alias: `FTPDeployer`
 - Artisan command: `ftp-deploy`
 
@@ -116,7 +116,7 @@ The package auto-discovers:
 ## Publish config
 
 ```bash
-php artisan vendor:publish --provider="InjaOnline\FTPDeployer\FTPDeployerServiceProvider" --tag=config
+php artisan vendor:publish --provider="inja-online\FTPDeployer\FTPDeployerServiceProvider" --tag=config
 ```
 
 This creates:
@@ -128,7 +128,7 @@ config/ftp-deployer.php
 If your Laravel version or publishing setup does not use tags for this package, run:
 
 ```bash
-php artisan vendor:publish --provider="InjaOnline\FTPDeployer\FTPDeployerServiceProvider"
+php artisan vendor:publish --provider="inja-online\FTPDeployer\FTPDeployerServiceProvider"
 ```
 
 ---

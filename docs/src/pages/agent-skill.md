@@ -104,7 +104,7 @@ You can install this skill directly using the `skills` CLI installer. Execute th
 npx skills add {repo} --skill ftp-deployer
 ```
 
-*(Replace `{repo}` with the repository URL, e.g. `https://github.com/injaonline/ftp-deployer`)*
+*(Replace `{repo}` with the repository URL, e.g. `https://github.com/inja-online/ftp-deployer`)*
 
 ---
 
